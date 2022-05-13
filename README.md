@@ -1,4 +1,4 @@
-# kkrh
+# binge
 
 binge is a server to stream content from my library of TV-Shows and Movies. There's a lot of work left here. But it is demo worthy as of now.
 
