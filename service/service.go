@@ -5,14 +5,16 @@ import (
 
 	"github.com/viveknathani/binge/database"
 	"github.com/viveknathani/binge/entity"
+	"github.com/viveknathani/binge/processor"
 	"github.com/viveknathani/binge/shared"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 type Service struct {
-	Database *database.Database
-	Logger   *zap.Logger
+	Database  *database.Database
+	Logger    *zap.Logger
+	Processor *processor.Processor
 }
 
 func zapReqID(ctx context.Context) zapcore.Field {
