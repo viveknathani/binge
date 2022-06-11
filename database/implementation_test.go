@@ -80,6 +80,9 @@ func TestCreateAndGetMovie(t *testing.T) {
 	}
 
 	got, err := db.GetMovies()
+	if err != nil {
+		log.Fatal(err)
+	}
 	if len(*got) != 1 {
 		log.Fatal("Incorrect length for movies array.")
 	}
@@ -103,6 +106,9 @@ func TestCreateAndGetShow(t *testing.T) {
 	}
 
 	got, err := db.GetShows()
+	if err != nil {
+		log.Fatal(err)
+	}
 	if len(*got) != 1 {
 		log.Fatal("Incorrect length for movies array.")
 	}

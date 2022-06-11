@@ -72,13 +72,22 @@ func (s *Server) uploadHandler(w http.ResponseWriter, r *http.Request) {
 	v := &entity.Video{
 		VideoId: fmt.Sprintf("%d", videoID),
 	}
-	s.Service.AddVideo(r.Context(), v)
+	err = s.Service.AddVideo(r.Context(), v)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	m := &entity.Movie{
-		Name:    movieName,
+		Name: movieName,
+
 		VideoId: v.VideoId,
 	}
-	s.Service.AddMovie(r.Context(), m)
+	err = s.Service.AddMovie(r.Context(), m)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	s.Service.Processor.Push(processor.Event{
 		Path:    fmt.Sprintf("./uploads/%d%s", videoID, filepath.Ext(fileHeader.Filename)),

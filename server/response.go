@@ -22,18 +22,6 @@ func sendResponse(w http.ResponseWriter, msg string, code int) error {
 	return nil
 }
 
-func sendClientError(w http.ResponseWriter, msg string) error {
-	return sendResponse(w, msg, http.StatusBadRequest)
-}
-
 func sendServerError(w http.ResponseWriter) error {
-	return sendResponse(w, "server error", 500)
-}
-
-func sendCreated(w http.ResponseWriter) error {
-	return sendResponse(w, "created", http.StatusCreated)
-}
-
-func sendUpdated(w http.ResponseWriter) error {
-	return sendResponse(w, "updated", http.StatusOK)
+	return sendResponse(w, "server error", http.StatusInternalServerError)
 }

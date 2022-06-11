@@ -5,13 +5,6 @@ import (
 	"strings"
 )
 
-func setContentTypeJSON(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-		handler.ServeHTTP(w, r)
-	}
-}
-
 func hasExtension(path string, extension string) bool {
 	return strings.HasSuffix(path, extension) || strings.HasSuffix(path, extension+"/")
 }

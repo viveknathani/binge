@@ -23,6 +23,12 @@ func (s *Server) serveShowEpisodesPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t, err := template.ParseFiles("web/templates/show.html")
+	if err != nil {
+		if ok := sendServerError(w); ok != nil {
+			s.Service.Logger.Error(err.Error(), zapReqID(r))
+		}
+		return
+	}
 	err = t.Execute(w, showPageVariables{
 		Episodes: episodes,
 	})

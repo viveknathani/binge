@@ -2,7 +2,10 @@ package processor
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"log"
+	"os"
 	"os/exec"
 	"sync"
 )
@@ -25,17 +28,28 @@ type Processor struct {
 	jobQueue    chan Event
 }
 
+func makeDirectoryIfNotExists(path string) {
+
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
+
 // ProcessVideo will take the path to a video and produce its chunks
 // and the .mpd file. The file will have the name $VideoId.mpd.
 func (e *Event) ProcessVideo() {
 
+	makeDirectoryIfNotExists("./content/" + e.VideoId)
 	cmd := exec.Command("ffmpeg", "-re", "-i", e.Path, "-map", "0", "-map", "0",
 		"-c:a", "libfdk_aac", "-c:v", "libx264", "-b:v:0", "800k", "-b:v:1", "300k",
 		"-s:v:1", "320x170", "-profile:v:1", "baseline", "-profile:v:0", "main",
 		"-bf", "1", "-keyint_min", "120", "-g", "120", "-sc_threshold", "0",
 		"-b_strategy", "0", "-ar:a:1", "22050", "-use_timeline", "1", "-use_template", "1",
 		"-window_size", "5", "-adaptation_sets", "id=0,streams=v id=1,streams=a",
-		"-seg_duration", "10", "-f", "dash", "./content/"+e.VideoId+".mpd")
+		"-seg_duration", "10", "-f", "dash", "./content/"+e.VideoId+"/"+e.VideoId+".mpd")
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	err := cmd.Run()
@@ -54,12 +68,9 @@ func (d *Processor) Push(e Event) {
 // waitForEvents is a function that infinitely waits for an event to be
 // added onto the queue and process it once found.
 func (d *Processor) waitForEvents() {
-	for {
-		select {
-		case e := <-d.jobQueue:
-			e.ProcessVideo()
-			d.pendingJobs.Delete(e.VideoId)
-		}
+	for e := range d.jobQueue {
+		e.ProcessVideo()
+		d.pendingJobs.Delete(e.VideoId)
 	}
 }
 

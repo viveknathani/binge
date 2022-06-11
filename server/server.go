@@ -58,8 +58,3 @@ func showRequestMetaData(l *zap.Logger, r *http.Request) {
 
 	l.Info("incoming request", zapReqID(r), reqMethod, reqPath)
 }
-
-func showRequestEnd(l *zap.Logger, r *http.Request) {
-
-	l.Info("completed processing", zapReqID(r))
-}
