@@ -2,24 +2,39 @@ name: test
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
 
-  build:
+  test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: binge
+          POSTGRES_USER: viveknathani
+          POSTGRES_PASSWORD: root
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Go
+    - name: set up Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.18
+        
+    - name: build
+      run: make build
 
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: go test -v ./...
+    - name: test
+      run: make test
